@@ -1,0 +1,200 @@
+
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.*;
+
+public class SchoolRegistrarGUI extends JFrame {
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/school_db";
+    private static final String USER = "root";
+    private static final String PASSWORD = "password";
+
+    private JTextField nameField, ageField, gradeField, idField, searchField;
+    private JTextArea outputArea;
+
+    public SchoolRegistrarGUI() {
+        // GUI Setup
+        setTitle("School Registrar System");
+        setSize(600, 500);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        // Input Panel
+        JPanel inputPanel = new JPanel(new GridLayout(5, 2));
+        inputPanel.add(new JLabel("Student ID (for Update/Delete):"));
+        idField = new JTextField();
+        inputPanel.add(idField);
+
+        inputPanel.add(new JLabel("Name:"));
+        nameField = new JTextField();
+        inputPanel.add(nameField);
+
+        inputPanel.add(new JLabel("Age:"));
+        ageField = new JTextField();
+        inputPanel.add(ageField);
+
+        inputPanel.add(new JLabel("Grade:"));
+        gradeField = new JTextField();
+        inputPanel.add(gradeField);
+
+        inputPanel.add(new JLabel("Search Name:"));
+        searchField = new JTextField();
+        inputPanel.add(searchField);
+
+        add(inputPanel, BorderLayout.NORTH);
+
+        // Button Panel
+        JPanel buttonPanel = new JPanel();
+        JButton addButton = new JButton("Add");
+        JButton updateButton = new JButton("Update");
+        JButton deleteButton = new JButton("Delete");
+        JButton searchButton = new JButton("Search");
+
+        buttonPanel.add(addButton);
+        buttonPanel.add(updateButton);
+        buttonPanel.add(deleteButton);
+        buttonPanel.add(searchButton);
+
+        add(buttonPanel, BorderLayout.CENTER);
+
+        // Output Area
+        outputArea = new JTextArea();
+        outputArea.setEditable(false);
+        add(new JScrollPane(outputArea), BorderLayout.SOUTH);
+
+        // Button Actions
+        addButton.addActionListener(e -> addRecord());
+        updateButton.addActionListener(e -> updateRecord());
+        deleteButton.addActionListener(e -> deleteRecord());
+        searchButton.addActionListener(e -> searchRecords());
+
+        // Database Connection
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
+            outputArea.append("Connected to the database successfully!\n");
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Database connection failed: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void addRecord() {
+        String name = nameField.getText();
+        String ageText = ageField.getText();
+        String grade = gradeField.getText();
+
+        if (name.isEmpty() || ageText.isEmpty() || grade.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "All fields are required for adding a record!",
+                    "Input Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
+            String sql = "INSERT INTO students (name, age, grade) VALUES (?, ?, ?)";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setString(1, name);
+                pstmt.setInt(2, Integer.parseInt(ageText));
+                pstmt.setString(3, grade);
+                pstmt.executeUpdate();
+                outputArea.append("Record added successfully!\n");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error adding record: " + e.getMessage(),
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void updateRecord() {
+        String idText = idField.getText();
+        String name = nameField.getText();
+        String ageText = ageField.getText();
+        String grade = gradeField.getText();
+
+        if (idText.isEmpty() || name.isEmpty() || ageText.isEmpty() || grade.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "All fields are required for updating a record!",
+                    "Input Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
+            String sql = "UPDATE students SET name = ?, age = ?, grade = ? WHERE id = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setString(1, name);
+                pstmt.setInt(2, Integer.parseInt(ageText));
+                pstmt.setString(3, grade);
+                pstmt.setInt(4, Integer.parseInt(idText));
+                int rowsUpdated = pstmt.executeUpdate();
+                if (rowsUpdated > 0) {
+                    outputArea.append("Record updated successfully!\n");
+                } else {
+                    outputArea.append("Record not found!\n");
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error updating record: " + e.getMessage(),
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void deleteRecord() {
+        String idText = idField.getText();
+
+        if (idText.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Student ID is required for deleting a record!",
+                    "Input Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
+            String sql = "DELETE FROM students WHERE id = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setInt(1, Integer.parseInt(idText));
+                int rowsDeleted = pstmt.executeUpdate();
+                if (rowsDeleted > 0) {
+                    outputArea.append("Record deleted successfully!\n");
+                } else {
+                    outputArea.append("Record not found!\n");
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error deleting record: " + e.getMessage(),
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void searchRecords() {
+        String searchName = searchField.getText();
+
+        if (searchName.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Name is required for searching records!",
+                    "Input Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
+            String sql = "SELECT * FROM students WHERE name LIKE ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setString(1, "%" + searchName + "%");
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    outputArea.append("\n--- Search Results ---\n");
+                    while (rs.next()) {
+                        outputArea.append(String.format("ID: %d, Name: %s, Age: %d, Grade: %s\n",
+                                rs.getInt("id"), rs.getString("name"),
+                                rs.getInt("age"), rs.getString("grade")));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error searching records: " + e.getMessage(),
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            SchoolRegistrarGUI gui = new SchoolRegistrarGUI();
+            gui.setVisible(true);
+        });
+    }
+}
