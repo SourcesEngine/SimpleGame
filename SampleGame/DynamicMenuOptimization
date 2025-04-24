@@ -1,0 +1,91 @@
+
+
+import java.util.*;
+
+public class DynamicMenuOptimization {
+
+    // Mock data classes
+    static class MenuItem {
+        String name;
+        double price;
+        double cost;
+        int popularity;
+
+        public MenuItem(String name, double price, double cost, int popularity) {
+            this.name = name;
+            this.price = price;
+            this.cost = cost;
+            this.popularity = popularity;
+        }
+
+        @Override
+        public String toString() {
+            return name + " ($" + price + ")";
+        }
+    }
+
+    static class Context {
+        String timeOfDay;
+        String weather;
+        boolean peakHours;
+
+        public Context(String timeOfDay, String weather, boolean peakHours) {
+            this.timeOfDay = timeOfDay;
+            this.weather = weather;
+            this.peakHours = peakHours;
+        }
+    }
+
+    // Dynamic menu optimization logic
+    public static List<MenuItem> optimizeMenu(List<MenuItem> menu, Context context, double inventoryBudget) {
+        // Sort items by popularity (descending order)
+        menu.sort((a, b) -> b.popularity - a.popularity);
+
+        List<MenuItem> optimizedMenu = new ArrayList<>();
+        double totalCost = 0;
+
+        for (MenuItem item : menu) {
+            // Apply dynamic conditions based on context
+            if (context.peakHours && item.popularity < 50) {
+                continue; // Skip less popular items during peak hours
+            }
+
+            if (context.weather.equals("hot") && item.name.toLowerCase().contains("soup")) {
+                continue; // Avoid hot items in hot weather
+            }
+
+            if (totalCost + item.cost <= inventoryBudget) {
+                optimizedMenu.add(item);
+                totalCost += item.cost;
+            }
+        }
+
+        return optimizedMenu;
+    }
+
+    public static void main(String[] args) {
+        // Sample menu items
+        List<MenuItem> menu = Arrays.asList(
+            new MenuItem("Burger", 5.99, 2.50, 90),
+            new MenuItem("Fries", 2.99, 1.00, 80),
+            new MenuItem("Smoothie", 4.99, 1.50, 70),
+            new MenuItem("Soup", 3.99, 1.20, 60),
+            new MenuItem("Coffee", 1.99, 0.50, 85)
+        );
+
+        // Example context: Morning rush, hot weather, and peak hours
+        Context context = new Context("morning", "hot", true);
+
+        // Inventory budget
+        double inventoryBudget = 5.00;
+
+        // Optimize menu
+        List<MenuItem> optimizedMenu = optimizeMenu(menu, context, inventoryBudget);
+
+        // Display optimized menu
+        System.out.println("Optimized Menu:");
+        for (MenuItem item : optimizedMenu) {
+            System.out.println(item);
+        }
+    }
+}
