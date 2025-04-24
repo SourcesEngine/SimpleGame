@@ -1,0 +1,58 @@
+
+
+import java.util.Scanner;
+
+public class RestaurantChatbot {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Greet the customer
+        System.out.println("Welcome to FastBites! 🍔 How can I help you today?");
+        System.out.println("1. Place an order");
+        System.out.println("2. Ask about the menu");
+        System.out.println("3. Exit");
+
+        String input = scanner.nextLine();
+
+        if (input.equals("1")) {
+            takeOrder(scanner);
+        } else if (input.equals("2")) {
+            showMenu();
+        } else {
+            System.out.println("Thank you for visiting FastBites! Have a great day! 😊");
+        }
+
+        scanner.close();
+    }
+
+    public static void takeOrder(Scanner scanner) {
+        System.out.println("Great! Here's our menu:");
+        showMenu();
+        System.out.println("What would you like to order? (Type the item number or name)");
+
+        // Capture the customer's order
+        String order = scanner.nextLine();
+        System.out.println("How many would you like?");
+        int quantity = Integer.parseInt(scanner.nextLine());
+
+        // Confirm the order
+        System.out.println("Got it! " + quantity + " x " + order + ".");
+        System.out.println("Would you like to add anything else? (yes/no)");
+
+        String moreOrder = scanner.nextLine().toLowerCase();
+        if (moreOrder.equals("yes")) {
+            takeOrder(scanner);
+        } else {
+            System.out.println("Thank you for your order! Your food will be ready soon. Enjoy your meal! 🍴");
+        }
+    }
+
+    public static void showMenu() {
+        System.out.println("🗒️ Today's Menu:");
+        System.out.println("1. Burger - $5.99");
+        System.out.println("2. Fries - $2.99");
+        System.out.println("3. Soda - $1.99");
+        System.out.println("4. Salad - $4.99");
+        System.out.println("5. Chicken Nuggets - $6.49");
+    }
+}
