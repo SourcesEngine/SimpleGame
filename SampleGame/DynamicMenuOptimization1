@@ -1,0 +1,62 @@
+
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class DynamicMenuOptimization {
+
+    // Sample data structures
+    private static Map<String, Integer> inventory = new HashMap<>();
+    private static Map<String, Double> menuPrices = new HashMap<>();
+
+    public static void main(String[] args) {
+        // Initialize inventory and menu prices
+        inventory.put("Breakfast Sandwich", 50);
+        inventory.put("Coffee", 100);
+        inventory.put("Smoothie", 30);
+        inventory.put("Chicken Nuggets", 40);
+
+        menuPrices.put("Breakfast Sandwich", 5.0);
+        menuPrices.put("Coffee", 2.5);
+        menuPrices.put("Smoothie", 4.0);
+        menuPrices.put("Chicken Nuggets", 6.0);
+
+        // Simulate time-based menu optimization
+        List<String> recommendedMenu = optimizeMenu(LocalTime.now());
+        System.out.println("Recommended Menu: " + recommendedMenu);
+    }
+
+    // Function to optimize the menu based on time of day and inventory
+    public static List<String> optimizeMenu(LocalTime currentTime) {
+        List<String> recommendedMenu = new ArrayList<>();
+
+        // Morning menu (6 AM - 10 AM)
+        if (currentTime.isAfter(LocalTime.of(6, 0)) && currentTime.isBefore(LocalTime.of(10, 0))) {
+            addToMenuIfAvailable(recommendedMenu, "Breakfast Sandwich");
+            addToMenuIfAvailable(recommendedMenu, "Coffee");
+        }
+
+        // Afternoon menu (11 AM - 3 PM)
+        if (currentTime.isAfter(LocalTime.of(11, 0)) && currentTime.isBefore(LocalTime.of(15, 0))) {
+            addToMenuIfAvailable(recommendedMenu, "Smoothie");
+            addToMenuIfAvailable(recommendedMenu, "Chicken Nuggets");
+        }
+
+        // Evening menu (4 PM - 8 PM)
+        if (currentTime.isAfter(LocalTime.of(16, 0)) && currentTime.isBefore(LocalTime.of(20, 0))) {
+            addToMenuIfAvailable(recommendedMenu, "Chicken Nuggets");
+            addToMenuIfAvailable(recommendedMenu, "Coffee");
+        }
+
+        return recommendedMenu;
+    }
+
+    // Helper function to add items to the menu if they are in stock
+    private static void addToMenuIfAvailable(List<String> menu, String item) {
+        if (inventory.getOrDefault(item, 0) > 0) {
+            menu.add(item);
+        }
+    }
+}
