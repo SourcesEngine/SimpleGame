@@ -1,0 +1,230 @@
+
+									
+									
+									
+	import javax.swing.*;								
+	import java.awt.*;								
+	import java.awt.event.ActionEvent;								
+	import java.awt.event.ActionListener;								
+	import java.awt.event.KeyEvent;								
+	import java.awt.event.KeyListener;								
+									
+	public class CatchTheAppleGame extends JFrame {								
+	    private GamePanel gamePanel;								
+									
+	    public CatchTheAppleGame() {								
+	        setTitle("Catch the Apple");								
+	        setSize(400, 600);								
+	        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);								
+	        setResizable(false);								
+									
+	        gamePanel = new GamePanel();								
+	        add(gamePanel);								
+									
+	        setVisible(true);								
+	    }								
+									
+	    public static void main(String[] args) {								
+	        SwingUtilities.invokeLater(CatchTheAppleGame::new);								
+	    }								
+	}								
+									
+	class GamePanel extends JPanel implements ActionListener, KeyListener {								
+	    private int basketX = 150; // Initial basket position								
+	    private int basketWidth = 100, basketHeight = 20;								
+	    private int appleX = 150, appleY = 0; // Initial apple position								
+	    private int appleSize = 20;								
+	    private int score = 0;								
+	    private Timer timer;								
+									
+	    public GamePanel() {								
+	        setBackground(Color.LIGHT_GRAY);								
+	        setFocusable(true);								
+	        addKeyListener(this);								
+									
+	        timer = new Timer(30, this);								
+	        timer.start();								
+	    }								
+									
+	    @Override								
+	    protected void paintComponent(Graphics g) {								
+	        super.paintComponent(g);								
+									
+	        // Draw basket								
+	        g.setColor(Color.BLUE);								
+	        g.fillRect(basketX, getHeight() - basketHeight - 10, basketWidth, basketHeight);								
+									
+	        // Draw apple								
+	        g.setColor(Color.RED);								
+	        g.fillOval(appleX, appleY, appleSize, appleSize);								
+									
+	        // Draw score								
+	        g.setColor(Color.BLACK);								
+	        g.setFont(new Font("Arial", Font.BOLD, 16));								
+	        g.drawString("Score: " + score, 10, 20);								
+	    }								
+									
+	    @Override								
+	    public void actionPerformed(ActionEvent e) {								
+	        // Move apple down								
+	        appleY += 5;								
+									
+	        // Check if apple hits the basket								
+	        if (appleY + appleSize >= getHeight() - basketHeight - 10 &&								
+	            appleX + appleSize >= basketX &&								
+	            appleX <= basketX + basketWidth) {								
+	            score++;								
+	            resetApple();								
+	        }								
+									
+	        // Check if apple hits the ground								
+	        if (appleY > getHeight()) {								
+	            resetApple();								
+	        }								
+									
+	        repaint();								
+	    }								
+									
+	    private void resetApple() {								
+	        appleY = 0;								
+	        appleX = (int) (Math.random() * (getWidth() - appleSize));								
+	    }								
+									
+	    @Override								
+	    public void keyPressed(KeyEvent e) {								
+	        if (e.getKeyCode() == KeyEvent.VK_LEFT && basketX > 0) {								
+	            basketX -= 15;								
+	        }								
+	        if (e.getKeyCode() == KeyEvent.VK_RIGHT && basketX < getWidth() - basketWidth) {								
+	            basketX += 15;								
+	        }								
+	    }								
+									
+	    @Override								
+	    public void keyReleased(KeyEvent e) {								
+	        // Not used								
+	    }								
+									
+	    @Override								
+	    public void keyTyped(KeyEvent e) {								
+	        // Not used								
+	    }								
+	}								
+
+
+
+
+
+
+
+									
+									
+									
+	import javax.swing.*;								
+	import java.awt.*;								
+	import java.awt.event.ActionEvent;								
+	import java.awt.event.ActionListener;								
+	import java.awt.event.KeyEvent;								
+	import java.awt.event.KeyListener;								
+									
+	public class CatchTheAppleGame extends JFrame {								
+	    private GamePanel gamePanel;								
+									
+	    public CatchTheAppleGame() {								
+	        setTitle("Catch the Apple");								
+	        setSize(400, 600);								
+	        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);								
+	        setResizable(false);								
+									
+	        gamePanel = new GamePanel();								
+	        add(gamePanel);								
+									
+	        setVisible(true);								
+	    }								
+									
+	    public static void main(String[] args) {								
+	        SwingUtilities.invokeLater(CatchTheAppleGame::new);								
+	    }								
+	}								
+									
+	class GamePanel extends JPanel implements ActionListener, KeyListener {								
+	    private int basketX = 150; // Initial basket position								
+	    private int basketWidth = 100, basketHeight = 20;								
+	    private int appleX = 150, appleY = 0; // Initial apple position								
+	    private int appleSize = 20;								
+	    private int score = 0;								
+	    private Timer timer;								
+									
+	    public GamePanel() {								
+	        setBackground(Color.LIGHT_GRAY);								
+	        setFocusable(true);								
+	        addKeyListener(this);								
+									
+	        timer = new Timer(30, this);								
+	        timer.start();								
+	    }								
+									
+	    @Override								
+	    protected void paintComponent(Graphics g) {								
+	        super.paintComponent(g);								
+									
+	        // Draw basket								
+	        g.setColor(Color.BLUE);								
+	        g.fillRect(basketX, getHeight() - basketHeight - 10, basketWidth, basketHeight);								
+									
+	        // Draw apple								
+	        g.setColor(Color.RED);								
+	        g.fillOval(appleX, appleY, appleSize, appleSize);								
+									
+	        // Draw score								
+	        g.setColor(Color.BLACK);								
+	        g.setFont(new Font("Arial", Font.BOLD, 16));								
+	        g.drawString("Score: " + score, 10, 20);								
+	    }								
+									
+	    @Override								
+	    public void actionPerformed(ActionEvent e) {								
+	        // Move apple down								
+	        appleY += 5;								
+									
+	        // Check if apple hits the basket								
+	        if (appleY + appleSize >= getHeight() - basketHeight - 10 &&								
+	            appleX + appleSize >= basketX &&								
+	            appleX <= basketX + basketWidth) {								
+	            score++;								
+	            resetApple();								
+	        }								
+									
+	        // Check if apple hits the ground								
+	        if (appleY > getHeight()) {								
+	            resetApple();								
+	        }								
+									
+	        repaint();								
+	    }								
+									
+	    private void resetApple() {								
+	        appleY = 0;								
+	        appleX = (int) (Math.random() * (getWidth() - appleSize));								
+	    }								
+									
+	    @Override								
+	    public void keyPressed(KeyEvent e) {								
+	        if (e.getKeyCode() == KeyEvent.VK_LEFT && basketX > 0) {								
+	            basketX -= 15;								
+	        }								
+	        if (e.getKeyCode() == KeyEvent.VK_RIGHT && basketX < getWidth() - basketWidth) {								
+	            basketX += 15;								
+	        }								
+	    }								
+									
+	    @Override								
+	    public void keyReleased(KeyEvent e) {								
+	        // Not used								
+	    }								
+									
+	    @Override								
+	    public void keyTyped(KeyEvent e) {								
+	        // Not used								
+	    }								
+	}								
