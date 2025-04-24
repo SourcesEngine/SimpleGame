@@ -1,0 +1,190 @@
+
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+public class UserData extends JFrame {
+
+    static List<Map<String, Object>> studentsInfo = new ArrayList<>();
+    private JTextField usernameField, passwordField, nameField, surnameField, middleInitialField, subjectsField, tuitionFeeField;
+    private JTextField jsNameField, jfNameField, jmNameField;
+    private JComboBox<String> courseComboBox, yearLevelComboBox;
+    private JRadioButton maleButton, femaleButton, firstSemButton, secondSemButton, regularButton, irregularButton;
+    private ButtonGroup genderGroup, semesterGroup, statusGroup;
+    private JTextArea outputArea;
+
+    private JTable studentsTable;
+    private DefaultTableModel tableModel;
+
+    public UserData() {
+        setTitle("Student Account Management System");
+        setSize(800, 800);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        initializeFields();
+        setupLayout();
+    }
+
+    private void initializeFields() {
+        usernameField = new JTextField();
+        passwordField = new JTextField();
+        nameField = new JTextField();
+        surnameField = new JTextField();
+        middleInitialField = new JTextField();
+        subjectsField = new JTextField();
+        tuitionFeeField = new JTextField();
+        jsNameField = new JTextField();
+        jfNameField = new JTextField();
+        jmNameField = new JTextField();
+
+        courseComboBox = new JComboBox<>(new String[]{"BSBA", "BSIT", "BSCS"});
+        yearLevelComboBox = new JComboBox<>(new String[]{"1st Year", "2nd Year", "3rd Year", "4th Year"});
+
+        maleButton = new JRadioButton("Male");
+        femaleButton = new JRadioButton("Female");
+        genderGroup = new ButtonGroup();
+        genderGroup.add(maleButton);
+        genderGroup.add(femaleButton);
+
+        firstSemButton = new JRadioButton("First Semester");
+        secondSemButton = new JRadioButton("Second Semester");
+        semesterGroup = new ButtonGroup();
+        semesterGroup.add(firstSemButton);
+        semesterGroup.add(secondSemButton);
+
+        regularButton = new JRadioButton("Regular");
+        irregularButton = new JRadioButton("Irregular");
+        statusGroup = new ButtonGroup();
+        statusGroup.add(regularButton);
+        statusGroup.add(irregularButton);
+
+        outputArea = new JTextArea(10, 40);
+        outputArea.setEditable(false);
+    }
+
+    private void setupLayout() {
+        // Buttons
+        JButton createButton = new JButton("Create/Update Account");
+        JButton viewInfoButton = new JButton("View Info");
+
+        // Set up Table
+        String[] columnNames = {"ID", "Surname", "First Name", "Middle Initial", "Subjects", "Gender", "Year Level", "Course", "Status", "Tuition Fee"};
+        tableModel = new DefaultTableModel(columnNames, 0); // Initial empty data
+        studentsTable = new JTable(tableModel);
+        JScrollPane tableScrollPane = new JScrollPane(studentsTable);
+
+        JPanel panel = new JPanel(new GridLayout(16, 2));
+        addComponentsToLayout(panel);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(createButton);
+        buttonPanel.add(viewInfoButton);
+
+        // Adding components to the frame
+        add(panel, BorderLayout.NORTH);
+        add(tableScrollPane, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
+        add(new JScrollPane(outputArea), BorderLayout.EAST);
+
+        createButton.addActionListener(e -> createOrUpdateAccount());
+        viewInfoButton.addActionListener(e -> viewInfo());
+    }
+
+    private void addComponentsToLayout(JPanel panel) {
+        panel.add(new JLabel("Username: ")); panel.add(usernameField);
+        panel.add(new JLabel("Password: ")); panel.add(passwordField);
+        panel.add(new JLabel("Name: ")); panel.add(nameField);
+        panel.add(new JLabel("Surname: ")); panel.add(surnameField);
+        panel.add(new JLabel("Middle Initial: ")); panel.add(middleInitialField);
+        panel.add(new JLabel("Subjects (comma separated): ")); panel.add(subjectsField);
+        panel.add(new JLabel("Tuition Fee: ")); panel.add(tuitionFeeField);
+        panel.add(new JLabel("Student Name: ")); panel.add(jsNameField);
+        panel.add(new JLabel("Father's Name: ")); panel.add(jfNameField);
+        panel.add(new JLabel("Mother's Name: ")); panel.add(jmNameField);
+        panel.add(new JLabel("Course: ")); panel.add(courseComboBox);
+        panel.add(new JLabel("Year Level: ")); panel.add(yearLevelComboBox);
+        panel.add(new JLabel("Gender: ")); panel.add(maleButton); panel.add(femaleButton);
+        panel.add(new JLabel("Semester: ")); panel.add(firstSemButton); panel.add(secondSemButton);
+        panel.add(new JLabel("Status: ")); panel.add(regularButton); panel.add(irregularButton);
+    }
+
+    private void createOrUpdateAccount() {
+        Map<String, Object> student = collectStudentData();
+        studentsInfo.add(student);
+        updateTable();
+        outputArea.setText("Account successfully created or updated!\n");
+        clearFields();
+    }
+
+    private Map<String, Object> collectStudentData() {
+        Map<String, Object> student = new HashMap<>();
+        student.put("ID", UUID.randomUUID().toString());
+        student.put("Surname", surnameField.getText());
+        student.put("First Name", nameField.getText());
+        student.put("Middle Initial", middleInitialField.getText());
+        student.put("Subjects", List.of(subjectsField.getText().split(",")));
+        student.put("Gender", maleButton.isSelected() ? "Male" : "Female");
+        student.put("Year Level", yearLevelComboBox.getSelectedItem().toString());
+        student.put("Course", courseComboBox.getSelectedItem().toString());
+        student.put("Status", regularButton.isSelected() ? "Regular" : "Irregular");
+        student.put("Tuition Fee", Double.parseDouble(tuitionFeeField.getText()));
+        return student;
+    }
+
+    private void updateTable() {
+        // Clear the table before adding new data
+        tableModel.setRowCount(0);
+
+        // Populate the table with the data from studentsInfo
+        for (Map<String, Object> student : studentsInfo) {
+            Object[] row = new Object[]{
+                student.get("ID"),
+                student.get("Surname"),
+                student.get("First Name"),
+                student.get("Middle Initial"),
+                String.join(", ", (List<String>) student.get("Subjects")),
+                student.get("Gender"),
+                student.get("Year Level"),
+                student.get("Course"),
+                student.get("Status"),
+                student.get("Tuition Fee")
+            };
+            tableModel.addRow(row);
+        }
+    }
+
+    private void viewInfo() {
+        updateTable();
+    }
+
+    private void clearFields() {
+        usernameField.setText("");
+        passwordField.setText("");
+        nameField.setText("");
+        surnameField.setText("");
+        middleInitialField.setText("");
+        subjectsField.setText("");
+        tuitionFeeField.setText("");
+        jsNameField.setText("");
+        jfNameField.setText("");
+        jmNameField.setText("");
+        courseComboBox.setSelectedIndex(0);
+        yearLevelComboBox.setSelectedIndex(0);
+        genderGroup.clearSelection();
+        semesterGroup.clearSelection();
+        statusGroup.clearSelection();
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new UserData().setVisible(true));
+    }
+}
