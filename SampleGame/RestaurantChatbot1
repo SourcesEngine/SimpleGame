@@ -1,0 +1,130 @@
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class RestaurantChatbot {
+    // Class to represent menu items
+    static class MenuItem {
+        String name;
+        double price;
+
+        MenuItem(String name, double price) {
+            this.name = name;
+            this.price = price;
+        }
+    }
+
+    // Menu and order list
+    static ArrayList<MenuItem> menu = new ArrayList<>();
+    static ArrayList<OrderItem> orderList = new ArrayList<>();
+
+    // Class to represent items in an order
+    static class OrderItem {
+        MenuItem menuItem;
+        int quantity;
+
+        OrderItem(MenuItem menuItem, int quantity) {
+            this.menuItem = menuItem;
+            this.quantity = quantity;
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Initialize the menu
+        initializeMenu();
+
+        // Greet the customer
+        System.out.println("Welcome to FastBites! 🍔 How can I help you today?");
+        System.out.println("1. Place an order");
+        System.out.println("2. Ask about the menu");
+        System.out.println("3. Exit");
+
+        String input = scanner.nextLine();
+
+        if (input.equals("1")) {
+            takeOrder(scanner);
+            printReceipt(); // Print the receipt after the order is complete
+        } else if (input.equals("2")) {
+            showMenu();
+        } else {
+            System.out.println("Thank you for visiting FastBites! Have a great day! 😊");
+        }
+
+        scanner.close();
+    }
+
+    // Initialize the menu
+    public static void initializeMenu() {
+        menu.add(new MenuItem("Burger", 5.99));
+        menu.add(new MenuItem("Fries", 2.99));
+        menu.add(new MenuItem("Soda", 1.99));
+        menu.add(new MenuItem("Salad", 4.99));
+        menu.add(new MenuItem("Chicken Nuggets", 6.49));
+    }
+
+    // Function to take the customer's order
+    public static void takeOrder(Scanner scanner) {
+        System.out.println("Great! Here's our menu:");
+        showMenu();
+        System.out.println("What would you like to order? (Type the item number or name)");
+
+        String order = scanner.nextLine();
+        MenuItem selectedItem = null;
+
+        // Check if the input matches a menu item
+        for (int i = 0; i < menu.size(); i++) {
+            if (order.equalsIgnoreCase(menu.get(i).name) || order.equals(String.valueOf(i + 1))) {
+                selectedItem = menu.get(i);
+                break;
+            }
+        }
+
+        if (selectedItem != null) {
+            System.out.println("How many would you like?");
+            int quantity = Integer.parseInt(scanner.nextLine());
+
+            // Add the item to the order list
+            orderList.add(new OrderItem(selectedItem, quantity));
+            System.out.println("Got it! " + quantity + " x " + selectedItem.name + ".");
+
+            System.out.println("Would you like to add anything else? (yes/no)");
+            String moreOrder = scanner.nextLine().toLowerCase();
+
+            if (moreOrder.equals("yes")) {
+                takeOrder(scanner);
+            } else {
+                System.out.println("Thank you! Your order is complete.");
+            }
+        } else {
+            System.out.println("Sorry, we couldn't find that item. Please try again.");
+            takeOrder(scanner);
+        }
+    }
+
+    // Display the menu
+    public static void showMenu() {
+        System.out.println("🗒️ Today's Menu:");
+        for (int i = 0; i < menu.size(); i++) {
+            System.out.println((i + 1) + ". " + menu.get(i).name + " - $" + menu.get(i).price);
+        }
+    }
+
+    // Print the receipt
+    public static void printReceipt() {
+        System.out.println("\n🧾 Receipt:");
+        double total = 0.0;
+
+        for (OrderItem orderItem : orderList) {
+            double itemTotal = orderItem.quantity * orderItem.menuItem.price;
+            total += itemTotal;
+
+            System.out.printf("%-20s x%-2d $%.2f\n", orderItem.menuItem.name, orderItem.quantity, itemTotal);
+        }
+
+        System.out.println("-------------------------------");
+        System.out.printf("Total: $%.2f\n", total);
+        System.out.println("Thank you for dining with us! 😊");
+    }
+}
