@@ -1,0 +1,237 @@
+
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+
+public class TuitionFeeCalculator1 extends JFrame {
+    private ArrayList<Subject> subjects; 
+    private JTable subjectTable; 
+    private JLabel totalFeeLabel; 
+    private JButton calculateButton; 
+    private final int costPerUnit = 500; 
+
+    public TuitionFeeCalculator1() {
+        subjects = new ArrayList<>();
+
+        addSubjectsForCourses();
+
+        setTitle("Tuition Fee Calculator");
+        setSize(800, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        String[] columnNames = {"Course", "Year", "Semester", "Subject", "Units", "Select"};
+        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                if (columnIndex == 5) return Boolean.class;
+                return String.class;
+            }
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 5;
+            }
+        };
+
+        for (Subject subject : subjects) {
+            tableModel.addRow(new Object[]{
+                subject.getCourse(), subject.getYear(), 
+                subject.getSemester(), subject.getName(), 
+                subject.getUnits(), false
+            });
+        }
+
+        subjectTable = new JTable(tableModel);
+        add(new JScrollPane(subjectTable), BorderLayout.CENTER);
+
+        JPanel bottomPanel = new JPanel(new FlowLayout());
+        calculateButton = new JButton("Calculate Tuition Fee");
+        totalFeeLabel = new JLabel("Total Fee: 0");
+        bottomPanel.add(calculateButton);
+        bottomPanel.add(totalFeeLabel);
+        add(bottomPanel, BorderLayout.SOUTH);
+
+        calculateButton.addActionListener(e -> {
+            int totalUnits = 0;
+            for (int i = 0; i < subjectTable.getRowCount(); i++) {
+                boolean isSelected = (boolean) subjectTable.getValueAt(i, 5);
+                if (isSelected) {
+                    totalUnits += (int) subjectTable.getValueAt(i, 4);
+                }
+            }
+            int totalFee = totalUnits * costPerUnit;
+            totalFeeLabel.setText("Total Fee: " + totalFee);
+        });
+    }
+
+    public void addSubjectsForCourses() {
+        // Add subjects for BSIT
+        addSubjects("BSIT", "First Year", "First Semester", 
+            new String[]{"Introduction to Computing", "Mathematics in IT", "Basic Programming", "Physical Education 1", "Communication Skills"}, 
+            new int[]{3, 3, 3, 2, 3});
+        addSubjects("BSIT", "First Year", "Second Semester", 
+            new String[]{"Programming 1", "Discrete Math", "Computer Fundamentals", "Physical Education 2", "Philippine History"}, 
+            new int[]{3, 3, 3, 2, 3});
+        addSubjects("BSIT", "Second Year", "First Semester", 
+            new String[]{"Object-Oriented Programming", "Data Structures", "Database Management Systems", "Physical Education 3", "World Literature"}, 
+            new int[]{3, 3, 3, 2, 3});
+        addSubjects("BSIT", "Second Year", "Second Semester", 
+            new String[]{"Operating Systems", "Software Engineering", "Network Fundamentals", "Physical Education 4", "Ethics"}, 
+            new int[]{3, 3, 3, 2, 3});
+        addSubjects("BSIT", "Third Year", "First Semester", 
+            new String[]{"Web Development", "Human-Computer Interaction", "System Analysis and Design", "Statistics", "Entrepreneurship"}, 
+            new int[]{3, 3, 3, 3, 3});
+        addSubjects("BSIT", "Third Year", "Second Semester", 
+            new String[]{"Mobile App Development", "IT Project Management", "Advanced Networking", "Research Methods", "Economics"}, 
+            new int[]{3, 3, 3, 3, 3});
+        addSubjects("BSIT", "Fourth Year", "First Semester", 
+            new String[]{"Capstone Project 1", "Internship", "Artificial Intelligence", "Emerging Technologies", "Professional Ethics"}, 
+            new int[]{3, 6, 3, 3, 3});
+        addSubjects("BSIT", "Fourth Year", "Second Semester", 
+            new String[]{"Capstone Project 2", "Cybersecurity", "Cloud Computing", "E-Commerce", "Advanced Statistics"}, 
+            new int[]{3, 3, 3, 3, 3});
+
+        // Add subjects for BSBA
+        addSubjects("BSBA", "First Year", "First Semester", 
+            new String[]{"Introduction to Business", "Business Math", "Fundamentals of Accounting", "Physical Education 1", "English Communication"}, 
+            new int[]{3, 3, 3, 2, 3});
+        addSubjects("BSBA", "First Year", "Second Semester", 
+            new String[]{"Accounting Principles", "Microeconomics", "Business Law", "Physical Education 2", "Philippine History"}, 
+            new int[]{3, 3, 3, 2, 3});
+        addSubjects("BSBA", "Second Year", "First Semester", 
+            new String[]{"Financial Management", "Business Statistics", "Marketing Management", "Physical Education 3", "World Literature"}, 
+            new int[]{3, 3, 3, 2, 3});
+        addSubjects("BSBA", "Second Year", "Second Semester", 
+            new String[]{"Operations Management", "Entrepreneurship", "Organizational Behavior", "Physical Education 4", "Ethics"}, 
+            new int[]{3, 3, 3, 2, 3});
+        addSubjects("BSBA", "Third Year", "First Semester", 
+            new String[]{"Human Resource Management", "Business Research", "Strategic Management", "Statistics", "Taxation"}, 
+            new int[]{3, 3, 3, 3, 3});
+        addSubjects("BSBA", "Third Year", "Second Semester", 
+            new String[]{"Business Policy", "Project Feasibility", "Corporate Governance", "Research Methods", "Economics"}, 
+            new int[]{3, 3, 3, 3, 3});
+        addSubjects("BSBA", "Fourth Year", "First Semester", 
+            new String[]{"Capstone Project 1", "Internship", "Investment Management", "Emerging Markets", "Professional Ethics"}, 
+            new int[]{3, 6, 3, 3, 3});
+        addSubjects("BSBA", "Fourth Year", "Second Semester", 
+            new String[]{"Capstone Project 2", "Risk Management", "Digital Marketing", "E-Commerce", "Advanced Business Analytics"}, 
+            new int[]{3, 3, 3, 3, 3});
+
+        // Add subjects for BSCPE
+        addSubjects("BSCPE", "First Year", "First Semester", 
+            new String[]{"Introduction to Engineering", "Engineering Math 1", "Computer Fundamentals", "Physical Education 1", "Communication Skills"}, 
+            new int[]{3, 3, 3, 2, 3});
+        addSubjects("BSCPE", "First Year", "Second Semester", 
+            new String[]{"Introduction to Engineering", "Discrete Math", "Programming 1", "Physical Education 2", "Philippine History"}, 
+            new int[]{3, 3, 3, 2, 3});
+        addSubjects("BSCPE", "Second Year", "First Semester", 
+            new String[]{"Circuits and Electronics", "Data Structures", "Database Management Systems", "Physical Education 3", "World Literature"}, 
+            new int[]{3, 3, 3, 2, 3});
+        addSubjects("BSCPE", "Second Year", "Second Semester", 
+            new String[]{"Digital Systems", "Software Engineering", "Network Fundamentals", "Physical Education 4", "Ethics"}, 
+            new int[]{3, 3, 3, 2, 3});
+        addSubjects("BSCPE", "Third Year", "First Semester", 
+            new String[]{"Embedded Systems", "Human-Computer Interaction", "System Analysis and Design", "Statistics", "Entrepreneurship"}, 
+            new int[]{3, 3, 3, 3, 3});
+        addSubjects("BSCPE", "Third Year", "Second Semester", 
+            new String[]{"Robotics", "IT Project Management", "Advanced Networking", "Research Methods", "Economics"}, 
+            new int[]{3, 3, 3, 3, 3});
+        addSubjects("BSCPE", "Fourth Year", "First Semester", 
+            new String[]{"Capstone Project 1", "Internship", "Artificial Intelligence", "Emerging Technologies", "Professional Ethics"}, 
+            new int[]{3, 6, 3, 3, 3});
+        addSubjects("BSCPE", "Fourth Year", "Second Semester", 
+            new String[]{"Capstone Project 2", "Cybersecurity", "Cloud Computing", "E-Commerce", "Advanced Statistics"}, 
+            new int[]{3, 3, 3, 3, 3});
+
+        // Add subjects for BSIS
+        addSubjects("BSIS", "First Year", "First Semester", 
+            new String[]{"Introduction to Information Systems", "Mathematics for IT", "Basic Programming", "Physical Education 1", "Communication Skills"}, 
+            new int[]{3, 3, 3, 2, 3});
+        addSubjects("BSIS", "First Year", "Second Semester", 
+            new String[]{"Information Systems Fundamentals", "Discrete Math", "Programming", "Physical Education 2", "Philippine History"}, 
+            new int[]{3, 3, 3, 2, 3});
+        addSubjects("BSIS", "Second Year", "First Semester", 
+            new String[]{"Systems Analysis and Design", "Data Structures", "Database Management Systems", "Physical Education 3", "World Literature"}, 
+            new int[]{3, 3, 3, 2, 3});
+        addSubjects("BSIS", "Second Year", "Second Semester", 
+            new String[]{"Information Systems Security", "Software Engineering", "Network Fundamentals", "Physical Education 4", "Ethics"}, 
+            new int[]{3, 3, 3, 2, 3});
+        addSubjects("BSIS", "Third Year", "First Semester", 
+            new String[]{"Web Systems", "Human-Computer Interaction", "Enterprise Resource Planning", "Statistics", "Entrepreneurship"}, 
+            new int[]{3, 3, 3, 3, 3});
+        addSubjects("BSIS", "Third Year", "Second Semester", 
+            new String[]{"IT Governance", "IT Project Management", "Advanced Networking", "Research Methods", "Economics"}, 
+            new int[]{3, 3, 3, 3, 3});
+        addSubjects("BSIS", "Fourth Year", "First Semester", 
+            new String[]{"Capstone Project 1", "Internship", "Business Process Management", "Emerging Technologies", "Professional Ethics"}, 
+            new int[]{3, 6, 3, 3, 3});
+        addSubjects("BSIS", "Fourth Year", "Second Semester", 
+            new String[]{"Capstone Project 2", "Cybersecurity", "Cloud Computing", "E-Commerce", "Advanced Business Analytics"}, 
+            new int[]{3, 3, 3, 3, 3});
+
+        // Add subjects for BSTM
+        addSubjects("BSTM", "First Year", "First Semester", 
+            new String[]{"Introduction to Tourism", "Tourism Geography", "Travel Services", "Physical Education 1", "Communication Skills"}, 
+            new int[]{3, 3, 3, 2, 3});
+        addSubjects("BSTM", "First Year", "Second Semester", 
+            new String[]{"Tourism Industry Overview", "Philippine Culture and Tourism Geography", "Travel and Tour Operations", "Physical Education 2", "Philippine History"}, 
+            new int[]{3, 3, 3, 2, 3});
+        addSubjects("BSTM", "Second Year", "First Semester", 
+            new String[]{"Sustainable Tourism", "Cultural Tourism", "Marketing Management", "Physical Education 3", "World Literature"}, 
+            new int[]{3, 3, 3, 2, 3});
+        addSubjects("BSTM", "Second Year", "Second Semester", 
+            new String[]{"Hospitality Management", "Tourism Policy and Planning", "Organizational Behavior", "Physical Education 4", "Ethics"}, 
+            new int[]{3, 3, 3, 2, 3});
+        addSubjects("BSTM", "Third Year", "First Semester", 
+            new String[]{"Ecotourism Management", "Tourism Research", "Strategic Management", "Statistics", "Taxation"}, 
+            new int[]{3, 3, 3, 3, 3});
+        addSubjects("BSTM", "Third Year", "Second Semester", 
+            new String[]{"Tourism Development", "Project Feasibility", "Event Management", "Research Methods", "Economics"}, 
+            new int[]{3, 3, 3, 3, 3});
+        addSubjects("BSTM", "Fourth Year", "First Semester", 
+            new String[]{"Capstone Project 1", "Internship", "Tourism Marketing", "Emerging Markets", "Professional Ethics"}, 
+            new int[]{3, 6, 3, 3, 3});
+        addSubjects("BSTM", "Fourth Year", "Second Semester", 
+            new String[]{"Capstone Project 2", "Risk Management", "Digital Tourism", "E-Commerce", "Advanced Tourism Analytics"}, 
+            new int[]{3, 3, 3, 3, 3});
+    }
+
+    // Method to add subjects to the list
+    private void addSubjects(String course, String year, String semester, String[] subjectNames, int[] units) {
+        // Iterate through subject names and add each to the subjects list
+        for (int i = 0; i < subjectNames.length; i++) {
+            subjects.add(new Subject(course, year, semester, subjectNames[i], units[i]));
+        }
+    }
+
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new TuitionFeeCalculator1().setVisible(true));
+    }
+}
+
+class Subject {
+    private String course;
+    private String year;
+    private String semester;
+    private String name;
+    private int units;
+
+    public Subject(String course, String year, String semester, String name, int units) {
+        this.course = course;
+        this.year = year;
+        this.semester = semester;
+        this.name = name;
+        this.units = units;
+    }
+
+    public String getCourse() { return course; }
+    public String getYear() { return year; }
+    public String getSemester() { return semester; }
+    public String getName() { return name; }
+    public int getUnits() { return units; }
+}
