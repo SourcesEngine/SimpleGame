@@ -1,0 +1,250 @@
+
+
+	Database Setup: A MySQL database named school_db with a table students:
+
+
+CREATE DATABASE school_db;
+USE school_db;
+CREATE TABLE students (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    age INT,
+    grade VARCHAR(50)
+);
+
+JDBC Driver: Ensure the MySQL JDBC driver is added to your NetBeans project. You can download it here if it's not included.
+
+
+
+Code for CRUD Operations
+1. Add Record
+This method inserts a new student record into the database.
+
+
+private void addRecord() {
+    String name = nameField.getText();
+    String ageText = ageField.getText();
+    String grade = gradeField.getText();
+
+    if (name.isEmpty() || ageText.isEmpty() || grade.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "All fields are required for adding a record!",
+                "Input Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
+        String sql = "INSERT INTO students (name, age, grade) VALUES (?, ?, ?)";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, name);
+            pstmt.setInt(2, Integer.parseInt(ageText));
+            pstmt.setString(3, grade);
+            pstmt.executeUpdate();
+            outputArea.append("Record added successfully!\n");
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error adding record: " + e.getMessage(),
+                "Database Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+
+
+
+Update Record
+This method updates a record based on the student's ID.
+
+
+private void updateRecord() {
+    String idText = idField.getText();
+    String name = nameField.getText();
+    String ageText = ageField.getText();
+    String grade = gradeField.getText();
+
+    if (idText.isEmpty() || name.isEmpty() || ageText.isEmpty() || grade.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "All fields are required for updating a record!",
+                "Input Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
+        String sql = "UPDATE students SET name = ?, age = ?, grade = ? WHERE id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, name);
+            pstmt.setInt(2, Integer.parseInt(ageText));
+            pstmt.setString(3, grade);
+            pstmt.setInt(4, Integer.parseInt(idText));
+            int rowsUpdated = pstmt.executeUpdate();
+            if (rowsUpdated > 0) {
+                outputArea.append("Record updated successfully!\n");
+            } else {
+                outputArea.append("Record not found!\n");
+            }
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error updating record: " + e.getMessage(),
+                "Database Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+
+
+
+
+Here’s the code for the add, update, delete, and search functionalities. These methods use JDBC to connect to a MySQL database and perform the respective operations.
+
+Before proceeding, ensure you have:
+
+Database Setup: A MySQL database named school_db with a table students:
+
+sql
+
+CREATE DATABASE school_db;
+USE school_db;
+CREATE TABLE students (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    age INT,
+    grade VARCHAR(50)
+);
+JDBC Driver: Ensure the MySQL JDBC driver is added to your NetBeans project. You can download it here if it's not included.
+Code for CRUD Operations
+1. Add Record
+This method inserts a new student record into the database.
+
+java
+Copy code
+private void addRecord() {
+    String name = nameField.getText();
+    String ageText = ageField.getText();
+    String grade = gradeField.getText();
+
+    if (name.isEmpty() || ageText.isEmpty() || grade.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "All fields are required for adding a record!",
+                "Input Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
+        String sql = "INSERT INTO students (name, age, grade) VALUES (?, ?, ?)";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, name);
+            pstmt.setInt(2, Integer.parseInt(ageText));
+            pstmt.setString(3, grade);
+            pstmt.executeUpdate();
+            outputArea.append("Record added successfully!\n");
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error adding record: " + e.getMessage(),
+                "Database Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+2. Update Record
+This method updates a record based on the student's ID.
+
+java
+Copy code
+private void updateRecord() {
+    String idText = idField.getText();
+    String name = nameField.getText();
+    String ageText = ageField.getText();
+    String grade = gradeField.getText();
+
+    if (idText.isEmpty() || name.isEmpty() || ageText.isEmpty() || grade.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "All fields are required for updating a record!",
+                "Input Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
+        String sql = "UPDATE students SET name = ?, age = ?, grade = ? WHERE id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, name);
+            pstmt.setInt(2, Integer.parseInt(ageText));
+            pstmt.setString(3, grade);
+            pstmt.setInt(4, Integer.parseInt(idText));
+            int rowsUpdated = pstmt.executeUpdate();
+            if (rowsUpdated > 0) {
+                outputArea.append("Record updated successfully!\n");
+            } else {
+                outputArea.append("Record not found!\n");
+            }
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error updating record: " + e.getMessage(),
+                "Database Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+3. Delete Record
+This method deletes a student record based on the ID.
+
+java
+Copy code
+private void deleteRecord() {
+    String idText = idField.getText();
+
+    if (idText.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Student ID is required for deleting a record!",
+                "Input Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
+        String sql = "DELETE FROM students WHERE id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, Integer.parseInt(idText));
+            int rowsDeleted = pstmt.executeUpdate();
+            if (rowsDeleted > 0) {
+                outputArea.append("Record deleted successfully!\n");
+            } else {
+                outputArea.append("Record not found!\n");
+            }
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error deleting record: " + e.getMessage(),
+                "Database Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+
+
+
+4. Search Records
+This method searches for students by name and displays the results.
+
+java
+Copy code
+private void searchRecords() {
+    String searchName = searchField.getText();
+
+    if (searchName.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Name is required for searching records!",
+                "Input Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
+        String sql = "SELECT * FROM students WHERE name LIKE ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, "%" + searchName + "%");
+            try (ResultSet rs = pstmt.executeQuery()) {
+                outputArea.append("\n--- Search Results ---\n");
+                boolean hasResults = false;
+                while (rs.next()) {
+                    hasResults = true;
+                    outputArea.append(String.format("ID: %d, Name: %s, Age: %d, Grade: %s\n",
+                            rs.getInt("id"), rs.getString("name"),
+                            rs.getInt("age"), rs.getString("grade")));
+                }
+                if (!hasResults) {
+                    outputArea.append("No records found.\n");
+                }
+            }
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error searching records: " + e.getMessage(),
+                "Database Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+
+
